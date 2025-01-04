@@ -92,6 +92,27 @@ class Pool extends EventEmitter {
   constructor(poolSize: number);
 
   /**
+   * Asynchronously processes tasks from the provided inputs in a lazy ordered manner.
+   * Tasks are executed concurrently using a pool of workers.
+   *
+   * @template TInput The type of the input elements.
+   * @template TResult The type of the result elements.
+   *
+   * @param inputs An iterable or async iterable of input elements.
+   * @param task The task to execute for each input element.
+   * @param onItemResult Optional callback invoked when a task completes successfully.
+   * @param onItemError Optional callback invoked when a task encounters an error.
+   *
+   * @returns An async generator yielding results of the tasks in the order of the input elements.
+   */
+  public async *imap<TInput, TResult>(
+    inputs: Iterable<TInput> | AsyncIterable<TInput>,
+    task: Task<TInput, TResult>,
+    onItemResult?: ItemResultHandler<TInput, TResult>,
+    onItemError?: ItemErrorHandler<TInput>,
+  ): AsyncGenerator<TResult | undefined>
+
+  /**
    * Asynchronously processes tasks from the provided inputs in a lazy unordered manner.
    * Tasks are executed concurrently using a pool of workers.
    *

@@ -2,14 +2,17 @@ import { describe, expect, it } from "@jest/globals";
 import { infinite, single } from "itertools-ts";
 import { Pool } from "../src";
 
-describe('Pool Map Tests', () => {
+describe('Pool IMap Tests', () => {
   it('Array Input Calc Sinus Test', async () => {
     const poolSize = 4;
 
     const pool = new Pool(poolSize);
     const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const result = await pool.map(input, calcSinTask);
+    const result = [];
+    for await (const itemResult of pool.imap(input, calcSinTask)) {
+      result.push(itemResult);
+    }
 
     pool.close();
 
@@ -27,7 +30,10 @@ describe('Pool Map Tests', () => {
     const input = single.limit(single.map(infinite.count(), (x) => x/inputCount), inputCount);
     const inputArray = [...single.limit(single.map(infinite.count(), (x) => x/inputCount), inputCount)];
 
-    const result = await pool.map(input, calcSinTask);
+    const result = [];
+    for await (const itemResult of pool.imap(input, calcSinTask)) {
+      result.push(itemResult);
+    }
 
     pool.close();
 
@@ -45,7 +51,11 @@ describe('Pool Map Tests', () => {
     const input = single.limitAsync(single.mapAsync(infinite.count(), (x) => x/inputCount), inputCount);
     const inputArray = [...single.limit(single.map(infinite.count(), (x) => x/inputCount), inputCount)];
 
-    const result = await pool.map(input, calcSinTask);
+    const result = [];
+    for await (const itemResult of pool.imap(input, calcSinTask)) {
+      result.push(itemResult);
+    }
+
     pool.close();
 
     expect(result.length).toBe(inputCount);
@@ -74,7 +84,10 @@ describe('Pool Map Tests', () => {
       errorsCount++;
     };
 
-    const result = await pool.map(input, calcSinWithRandomErrorTask, onItemResult, onItemError);
+    const result = [];
+    for await (const itemResult of pool.imap(input, calcSinWithRandomErrorTask, onItemResult, onItemError)) {
+      result.push(itemResult);
+    }
 
     pool.close();
 
@@ -94,12 +107,12 @@ describe('Pool Map Tests', () => {
     }
   }, 10000);
 
-  it('Long Test', () => {
+  it('Long Test', async () => {
     const poolSize = 4;
     const inputsCount = 100;
 
     const pool = new Pool(poolSize);
-    const data = [...single.limit(infinite.count(), inputsCount)].map((x) => [x]);
+    const input = [...single.limit(infinite.count(), inputsCount)].map((x) => [x]);
 
     const task = (input: number[]) => {
       let r = 0;
@@ -124,16 +137,19 @@ describe('Pool Map Tests', () => {
       errorsCount++;
     };
 
-    return pool.map(data, task, onItemResult, onItemError).then((result) => {
-      pool.close();
+    const result = [];
+    for await (const itemResult of pool.imap(input, task, onItemResult, onItemError)) {
+      result.push(itemResult);
+    }
 
-      expect(result.length).toBe(inputsCount);
-      expect(resultsCount + errorsCount).toBe(inputsCount);
-      expect(resultsCount).toBeGreaterThan(0);
+    pool.close();
 
-      expect(result.filter((x) => x !== undefined).length).toBe(resultsCount);
-      expect(result.filter((x) => x === undefined).length).toBe(errorsCount);
-    });
+    expect(result.length).toBe(inputsCount);
+    expect(resultsCount + errorsCount).toBe(inputsCount);
+    expect(resultsCount).toBeGreaterThan(0);
+
+    expect(result.filter((x) => x !== undefined).length).toBe(resultsCount);
+    expect(result.filter((x) => x === undefined).length).toBe(errorsCount);
   }, 50000);
 });
 

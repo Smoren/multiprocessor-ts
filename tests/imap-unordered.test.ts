@@ -1,10 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
-import { Pool } from "../src";
 import { infinite, single } from "itertools-ts";
+import { Pool } from "../src";
 
 describe('Pool IMap Unordered Tests', () => {
   it('Array Input Calc Sinus Test', async () => {
-    return;
     const poolSize = 4;
 
     const pool = new Pool(poolSize);
