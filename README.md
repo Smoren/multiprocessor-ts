@@ -1,10 +1,10 @@
 # Multiprocessing Pool Implementation for TypeScript
 
-[![npm](https://img.shields.io/npm/v/multiprocess.svg)](https://www.npmjs.com/package/multiprocess)
-[![npm](https://img.shields.io/npm/dm/multiprocess.svg?style=flat)](https://www.npmjs.com/package/multiprocess)
-[![Coverage Status](https://coveralls.io/repos/github/Smoren/multiprocess-ts/badge.svg?branch=master&rand=222)](https://coveralls.io/github/Smoren/multiprocess-ts?branch=master)
-![Build and test](https://github.com/Smoren/multiprocess-ts/actions/workflows/test.yml/badge.svg)
-[![Minified Size](https://badgen.net/bundlephobia/minzip/multiprocess)](https://bundlephobia.com/result?p=multiprocess)
+[![npm](https://img.shields.io/npm/v/multiprocessor.svg)](https://www.npmjs.com/package/multiprocessor)
+[![npm](https://img.shields.io/npm/dm/multiprocessor.svg?style=flat)](https://www.npmjs.com/package/multiprocessor)
+[![Coverage Status](https://coveralls.io/repos/github/Smoren/multiprocessor-ts/badge.svg?branch=master&rand=222)](https://coveralls.io/github/Smoren/multiprocessor-ts?branch=master)
+![Build and test](https://github.com/Smoren/multiprocessor-ts/actions/workflows/test.yml/badge.svg)
+[![Minified Size](https://badgen.net/bundlephobia/minzip/multiprocessor)](https://bundlephobia.com/result?p=multiprocessor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Description
@@ -16,7 +16,7 @@ Setup
 -----
 
 ```bash
-npm i multiprocess
+npm i multiprocessor
 ```
 
 Usage example
