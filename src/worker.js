@@ -5,6 +5,6 @@ process.on('message', async (message) => {
     const result = await taskFunction(inputData);
     process.send({ result, inputData, taskIndex });
   } catch (error) {
-    process.send({ error: error.toString(), inputData, taskIndex });
+    process.send({ error: error.message, inputData, taskIndex });
   }
 });

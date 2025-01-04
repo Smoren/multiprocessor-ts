@@ -1,9 +1,10 @@
-import type { ItemResultHandler, ItemErrorHandler } from "./types";
+import type { TaskResponse, TaskSuccessHandler, TaskErrorHandler } from "./types";
 import { Pool } from "./pool";
 
 export type {
-  ItemResultHandler,
-  ItemErrorHandler,
+  TaskResponse,
+  TaskSuccessHandler,
+  TaskErrorHandler,
 };
 
 export {

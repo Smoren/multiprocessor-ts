@@ -32,14 +32,14 @@ const poolSize = 4;
 const pool = new Pool(poolSize);
 const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const onItemResult = (itemResult: number, itemInput: number, taskIndex: number) => {
-  console.log('itemResult', itemResult, itemInput, taskIndex);
+const onTaskSuccess = (taskResult: number, taskInput: number, taskIndex: number) => {
+  console.log('taskSuccess', taskResult, taskInput, taskIndex);
 };
-const onItemError = (error: string, itemInput: number, taskIndex: number) => {
-  console.log('itemError', error, itemInput, taskIndex);
+const onTaskError = (taskError: string, taskInput: number, taskIndex: number) => {
+  console.log('taskError', taskError, taskInput, taskIndex);
 };
 
-const result = await pool.map(input, calcSinTask, onItemResult, onItemError);
+const result = await pool.map(input, calcSinTask, onTaskSuccess, onTaskError);
 pool.close();
 
 console.log(result);
@@ -77,8 +77,9 @@ API Reference
 ## Types
 ```typescript
 export type Task<TInput, TResult> = ((input: TInput) => TResult) | ((input: TInput) => Promise<TResult>)
-export type ItemResultHandler<TInput, TResult> = (itemResult: TResult, itemInput: TInput, taskIndex: number) => void;
-export type ItemErrorHandler<TInput> = (error: string, itemInput: TInput, taskIndex: number) => void;
+export type TaskSuccessHandler<TInput, TResult> = (result: TResult, input: TInput, index: number) => void;
+export type TaskErrorHandler<TInput> = (error: string, input: TInput, index: number) => void;
+export type TaskResponse<TResult> = [number, TResult | undefined, string | undefined];
 ```
 
 ## Pool
@@ -92,6 +93,27 @@ class Pool extends EventEmitter {
   constructor(poolSize: number);
 
   /**
+   * Asynchronously processes tasks from the provided inputs in an ordered manner.
+   * Tasks are executed concurrently using a pool of workers.
+   *
+   * @template TInput The type of the input elements.
+   * @template TResult The type of the result elements.
+   *
+   * @param inputs An iterable or async iterable of input elements.
+   * @param task The task to execute for each input element.
+   * @param onTaskSuccess Optional callback invoked when a task completes successfully.
+   * @param onTaskError Optional callback invoked when a task encounters an error.
+   *
+   * @returns A promise that resolves to an array of task results in the order of the input elements.
+   */
+  public async map<TInput, TResult>(
+    inputs: Iterable<TInput> | AsyncIterable<TInput>,
+    task: Task<TInput, TResult>,
+    onTaskSuccess?: TaskSuccessHandler<TInput, TResult>,
+    onTaskError?: TaskErrorHandler<TInput>,
+  ): Promise<Array<TResult | undefined>>;
+
+  /**
    * Asynchronously processes tasks from the provided inputs in a lazy ordered manner.
    * Tasks are executed concurrently using a pool of workers.
    *
@@ -100,17 +122,17 @@ class Pool extends EventEmitter {
    *
    * @param inputs An iterable or async iterable of input elements.
    * @param task The task to execute for each input element.
-   * @param onItemResult Optional callback invoked when a task completes successfully.
-   * @param onItemError Optional callback invoked when a task encounters an error.
+   * @param onTaskSuccess Optional callback invoked when a task completes successfully.
+   * @param onTaskError Optional callback invoked when a task encounters an error.
    *
    * @returns An async generator yielding results of the tasks in the order of the input elements.
    */
   public async *imap<TInput, TResult>(
     inputs: Iterable<TInput> | AsyncIterable<TInput>,
     task: Task<TInput, TResult>,
-    onItemResult?: ItemResultHandler<TInput, TResult>,
-    onItemError?: ItemErrorHandler<TInput>,
-  ): AsyncGenerator<TResult | undefined>
+    onTaskSuccess?: TaskSuccessHandler<TInput, TResult>,
+    onTaskError?: TaskErrorHandler<TInput>,
+  ): AsyncGenerator<TResult | undefined>;
 
   /**
    * Asynchronously processes tasks from the provided inputs in a lazy unordered manner.
@@ -121,20 +143,20 @@ class Pool extends EventEmitter {
    *
    * @param inputs An iterable or async iterable of input elements.
    * @param task The task to execute for each input element.
-   * @param onItemResult Optional callback invoked when a task completes successfully.
-   * @param onItemError Optional callback invoked when a task encounters an error.
+   * @param onTaskSuccess Optional callback invoked when a task completes successfully.
+   * @param onTaskError Optional callback invoked when a task encounters an error.
    *
    * @returns An async generator yielding results of the tasks in completion order.
    */
   public async *imapUnordered<TInput, TResult>(
     inputs: Iterable<TInput> | AsyncIterable<TInput>,
     task: Task<TInput, TResult>,
-    onItemResult?: ItemResultHandler<TInput, TResult>,
-    onItemError?: ItemErrorHandler<TInput>,
+    onTaskSuccess?: TaskSuccessHandler<TInput, TResult>,
+    onTaskError?: TaskErrorHandler<TInput>,
   ): AsyncGenerator<TResult | undefined>;
 
   /**
-   * Asynchronously processes tasks from the provided inputs in an ordered manner.
+   * Asynchronously processes tasks from the provided inputs in a lazy unordered manner with extended information.
    * Tasks are executed concurrently using a pool of workers.
    *
    * @template TInput The type of the input elements.
@@ -142,17 +164,17 @@ class Pool extends EventEmitter {
    *
    * @param inputs An iterable or async iterable of input elements.
    * @param task The task to execute for each input element.
-   * @param onItemResult Optional callback invoked when a task completes successfully.
-   * @param onItemError Optional callback invoked when a task encounters an error.
+   * @param onTaskSuccess Optional callback invoked when a task completes successfully.
+   * @param onTaskError Optional callback invoked when a task encounters an error.
    *
-   * @returns A promise that resolves to an array of task results in the order of the input elements.
+   * @returns An async generator yielding task responses containing the index, result or error for each task.
    */
-  public async map<TInput, TResult>(
+  public async *imapUnorderedExtended<TInput, TResult>(
     inputs: Iterable<TInput> | AsyncIterable<TInput>,
     task: Task<TInput, TResult>,
-    onItemResult?: ItemResultHandler<TInput, TResult>,
-    onItemError?: ItemErrorHandler<TInput>,
-  ): Promise<Array<TResult | undefined>>;
+    onTaskSuccess?: TaskSuccessHandler<TInput, TResult>,
+    onTaskError?: TaskErrorHandler<TInput>,
+  ): AsyncGenerator<TaskResponse<TResult>>;
 
   /**
    * Closes the worker pool by terminating all worker processes.

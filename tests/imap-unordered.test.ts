@@ -88,18 +88,18 @@ describe('Pool IMap Unordered Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onItemResult = (itemResult: [number, number], itemInput: [number, number], taskIndex: number) => {
-      console.log('itemResult', itemResult, itemInput, taskIndex);
+    const onTaskSuccess = (result: [number, number], input: [number, number], index: number) => {
+      console.log('taskSuccess', result, input, index);
       resultsCount++;
     };
-    const onItemError = (error: string, itemInput: [number, number], taskIndex: number) => {
-      console.log('itemError', error, itemInput, taskIndex);
+    const onTaskError = (error: string, input: [number, number], index: number) => {
+      console.log('taskError', error, input, index);
       errorsCount++;
     };
 
     const result: Array<number | undefined> = [...single.repeat(undefined, inputCount)];
 
-    for await (const item of pool.imapUnordered(indexedInput, calcSinIndexedWithRandomErrorTask, onItemResult, onItemError)) {
+    for await (const item of pool.imapUnordered(indexedInput, calcSinIndexedWithRandomErrorTask, onTaskSuccess, onTaskError)) {
       if (item === undefined) {
         continue;
       }
@@ -146,17 +146,17 @@ describe('Pool IMap Unordered Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onItemResult = (itemResult: number, itemInput: number[], taskIndex: number) => {
-      console.log('itemResult', itemResult, itemInput, taskIndex);
+    const onTaskSuccess = (result: number, input: number[], index: number) => {
+      console.log('taskSuccess', result, input, index);
       resultsCount++;
     };
-    const onItemError = (error: string, itemInput: number[], taskIndex: number) => {
-      console.log('itemError', error, itemInput, taskIndex);
+    const onTaskError = (error: string, input: number[], index: number) => {
+      console.log('taskError', error, input, index);
       errorsCount++;
     };
 
     const result = [];
-    for await (const item of pool.imapUnordered(data, task, onItemResult, onItemError)) {
+    for await (const item of pool.imapUnordered(data, task, onTaskSuccess, onTaskError)) {
       result.push(item);
     }
 

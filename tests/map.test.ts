@@ -65,16 +65,16 @@ describe('Pool Map Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onItemResult = (itemResult: number, itemInput: number, taskIndex: number) => {
-      console.log('itemResult', itemResult, itemInput, taskIndex);
+    const onTaskSuccess = (result: number, input: number, index: number) => {
+      console.log('taskSuccess', result, input, index);
       resultsCount++;
     };
-    const onItemError = (error: string, itemInput: number, taskIndex: number) => {
-      console.log('itemError', error, itemInput, taskIndex);
+    const onTaskError = (error: string, input: number, index: number) => {
+      console.log('taskError', error, input, index);
       errorsCount++;
     };
 
-    const result = await pool.map(input, calcSinWithRandomErrorTask, onItemResult, onItemError);
+    const result = await pool.map(input, calcSinWithRandomErrorTask, onTaskSuccess, onTaskError);
 
     pool.close();
 
@@ -115,16 +115,16 @@ describe('Pool Map Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onItemResult = (itemResult: number, itemInput: number[], taskIndex: number) => {
-      console.log('itemResult', itemResult, itemInput, taskIndex);
+    const onTaskSuccess = (result: number, input: number[], index: number) => {
+      console.log('taskSuccess', result, input, index);
       resultsCount++;
     };
-    const onItemError = (error: string, itemInput: number[], taskIndex: number) => {
-      console.log('itemError', error, itemInput, taskIndex);
+    const onTaskError = (error: string, input: number[], index: number) => {
+      console.log('taskError', error, input, index);
       errorsCount++;
     };
 
-    return pool.map(data, task, onItemResult, onItemError).then((result) => {
+    return pool.map(data, task, onTaskSuccess, onTaskError).then((result) => {
       pool.close();
 
       expect(result.length).toBe(inputsCount);

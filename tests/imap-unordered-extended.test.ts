@@ -2,23 +2,34 @@ import { describe, expect, it } from "@jest/globals";
 import { infinite, single } from "itertools-ts";
 import { Pool } from "../src";
 
-describe('Pool IMap Tests', () => {
+describe('Pool IMap Unordered Extended Tests', () => {
   it('Array Input Calc Sinus Test', async () => {
     const poolSize = 4;
 
     const pool = new Pool(poolSize);
     const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const result = [];
-    for await (const taskSuccess of pool.imap(input, calcSinTask)) {
-      result.push(taskSuccess);
+    const results = [];
+    results.length = input.length;
+
+    const errors = [];
+    errors.length = input.length;
+
+    for await (const [index, result, error] of pool.imapUnorderedExtended(input, calcSinTask)) {
+      results[index] = result;
+      errors[index] = error;
     }
 
     pool.close();
 
-    expect(result.length).toBe(input.length);
-    for (let i = 0; i < result.length; i++) {
-      expect(result[i]).toBeCloseTo(Math.sin(input[i]));
+    expect(results.length).toBe(input.length);
+    expect(errors.length).toBe(input.length);
+
+    expect(results.filter((x) => x !== undefined).length).toBe(input.length);
+    expect(errors.filter((x) => x !== undefined).length).toBe(0);
+
+    for (let i = 0; i < results.length; i++) {
+      expect(results[i]).toBeCloseTo(Math.sin(input[i]));
     }
   }, 10000);
 
@@ -30,16 +41,27 @@ describe('Pool IMap Tests', () => {
     const input = single.limit(single.map(infinite.count(), (x) => x/inputCount), inputCount);
     const inputArray = [...single.limit(single.map(infinite.count(), (x) => x/inputCount), inputCount)];
 
-    const result = [];
-    for await (const taskSuccess of pool.imap(input, calcSinTask)) {
-      result.push(taskSuccess);
+    const results = [];
+    results.length = inputArray.length;
+
+    const errors = [];
+    errors.length = inputArray.length;
+
+    for await (const [index, result, error] of pool.imapUnorderedExtended(input, calcSinTask)) {
+      results[index] = result;
+      errors[index] = error;
     }
 
     pool.close();
 
-    expect(result.length).toBe(inputCount);
-    for (let i = 0; i < result.length; i++) {
-      expect(result[i]).toBeCloseTo(Math.sin(inputArray[i]));
+    expect(results.length).toBe(inputArray.length);
+    expect(errors.length).toBe(inputArray.length);
+
+    expect(results.filter((x) => x !== undefined).length).toBe(inputArray.length);
+    expect(errors.filter((x) => x !== undefined).length).toBe(0);
+
+    for (let i = 0; i < results.length; i++) {
+      expect(results[i]).toBeCloseTo(Math.sin(inputArray[i]));
     }
   }, 10000);
 
@@ -51,16 +73,27 @@ describe('Pool IMap Tests', () => {
     const input = single.limitAsync(single.mapAsync(infinite.count(), (x) => x/inputCount), inputCount);
     const inputArray = [...single.limit(single.map(infinite.count(), (x) => x/inputCount), inputCount)];
 
-    const result = [];
-    for await (const taskSuccess of pool.imap(input, calcSinTask)) {
-      result.push(taskSuccess);
+    const results = [];
+    results.length = inputArray.length;
+
+    const errors = [];
+    errors.length = inputArray.length;
+
+    for await (const [index, result, error] of pool.imapUnorderedExtended(input, calcSinTask)) {
+      results[index] = result;
+      errors[index] = error;
     }
 
     pool.close();
 
-    expect(result.length).toBe(inputCount);
-    for (let i = 0; i < result.length; i++) {
-      expect(result[i]).toBeCloseTo(Math.sin(inputArray[i]));
+    expect(results.length).toBe(inputArray.length);
+    expect(errors.length).toBe(inputArray.length);
+
+    expect(results.filter((x) => x !== undefined).length).toBe(inputArray.length);
+    expect(errors.filter((x) => x !== undefined).length).toBe(0);
+
+    for (let i = 0; i < results.length; i++) {
+      expect(results[i]).toBeCloseTo(Math.sin(inputArray[i]));
     }
   }, 10000);
 
@@ -84,27 +117,42 @@ describe('Pool IMap Tests', () => {
       errorsCount++;
     };
 
-    const result = [];
-    for await (const taskSuccess of pool.imap(input, calcSinWithRandomErrorTask, onTaskSuccess, onTaskError)) {
-      result.push(taskSuccess);
+    const results = [];
+    results.length = inputArray.length;
+
+    const errors = [];
+    errors.length = inputArray.length;
+
+    for await (const [index, result, error] of pool.imapUnorderedExtended(input, calcSinWithRandomErrorTask, onTaskSuccess, onTaskError)) {
+      results[index] = result;
+      errors[index] = error;
     }
 
     pool.close();
 
-    expect(result.length).toBe(inputCount);
+    expect(results.length).toBe(inputCount);
     expect(resultsCount + errorsCount).toBe(inputCount);
     expect(resultsCount).toBeGreaterThan(0);
 
-    expect(result.filter((x) => x !== undefined).length).toBe(resultsCount);
-    expect(result.filter((x) => x === undefined).length).toBe(errorsCount);
+    expect(results.length).toBe(inputArray.length);
+    expect(errors.length).toBe(inputArray.length);
 
-    expect(result.length).toBe(inputCount);
-    for (let i = 0; i < result.length; i++) {
-      if (result[i] === undefined) {
+    expect(results.filter((x) => x !== undefined).length).toBe(resultsCount);
+    expect(results.filter((x) => x === undefined).length).toBe(errorsCount);
+
+    expect(errors.filter((x) => x !== undefined).length).toBe(errorsCount);
+    expect(errors.filter((x) => x === undefined).length).toBe(resultsCount);
+
+    for (let i = 0; i < results.length; i++) {
+      if (results[i] === undefined) {
         continue;
       }
-      expect(result[i]).toBeCloseTo(Math.sin(inputArray[i]));
+      expect(results[i]).toBeCloseTo(Math.sin(inputArray[i]));
     }
+
+    const errorsSet = new Set(errors.filter((x) => x !== undefined));
+    expect(errorsSet.size).toBe(1)
+    expect(errorsSet.has('Random error')).toBe(true);
   }, 10000);
 
   it('Long Test', async () => {
@@ -112,7 +160,7 @@ describe('Pool IMap Tests', () => {
     const inputsCount = 100;
 
     const pool = new Pool(poolSize);
-    const input = [...single.limit(infinite.count(), inputsCount)].map((x) => [x]);
+    const data = [...single.limit(infinite.count(), inputsCount)].map((x) => [x]);
 
     const task = (input: number[]) => {
       let r = 0;
@@ -137,19 +185,19 @@ describe('Pool IMap Tests', () => {
       errorsCount++;
     };
 
-    const result = [];
-    for await (const taskSuccess of pool.imap(input, task, onTaskSuccess, onTaskError)) {
-      result.push(taskSuccess);
+    const results = [];
+    for await (const [_, result] of pool.imapUnorderedExtended(data, task, onTaskSuccess, onTaskError)) {
+      results.push(result);
     }
 
     pool.close();
 
-    expect(result.length).toBe(inputsCount);
+    expect(results.length).toBe(inputsCount);
     expect(resultsCount + errorsCount).toBe(inputsCount);
     expect(resultsCount).toBeGreaterThan(0);
 
-    expect(result.filter((x) => x !== undefined).length).toBe(resultsCount);
-    expect(result.filter((x) => x === undefined).length).toBe(errorsCount);
+    expect(results.filter((x) => x !== undefined).length).toBe(resultsCount);
+    expect(results.filter((x) => x === undefined).length).toBe(errorsCount);
   }, 50000);
 });
 
