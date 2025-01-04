@@ -1,0 +1,70 @@
+{
+  "name": "multiprocess",
+  "version": "0.1.0",
+  "description": "Multiprocessing genetic algorithm implementation library extension",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Smoren/multiprocess-ts.git"
+  },
+  "author": {
+    "name": "Smoren",
+    "email": "ofigate@gmail.com",
+    "url": "https://github.com/Smoren"
+  },
+  "homepage": "https://github.com/Smoren/multiprocess-ts#readme",
+  "bugs": {
+    "url": "https://github.com/Smoren/multiprocess-ts/issues"
+  },
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "scripts": {
+    "build": "npm run build:commonjs && npm run build:es",
+    "build:commonjs": "rimraf lib && tsc --downlevelIteration --target es5 --outDir lib --module commonjs --declaration",
+    "build:es": "rimraf es && tsc --target es6 --outDir es --module es6",
+    "test": "jest --coverage",
+    "jest": "jest",
+    "format": "ts-scripts format",
+    "lint": "ts-scripts lint",
+    "prepublishOnly": "npm run build",
+    "my": "tsx --no-warnings src/my"
+  },
+  "files": [
+    "es",
+    "lib",
+    "src",
+    "tests"
+  ],
+  "keywords": [
+    "multiprocessing",
+    "multiprocess",
+    "multithreading",
+    "parallel",
+    "multicore",
+    "pool",
+    "map",
+    "map unordered",
+    "child process",
+    "worker",
+    "workers",
+    "thread",
+    "threads",
+    "TypeScript"
+  ],
+  "devDependencies": {
+    "@borderless/ts-scripts": "^0.15.0",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^18.19.33",
+    "npm-run-all": "^4.1.5",
+    "jest": "latest",
+    "rimraf": "^4.4.0",
+    "ts-expect": "^1.1.0",
+    "ts-jest": "^29.0.3",
+    "typescript": "~5.4.5",
+    "tsx": "^4.10.1",
+    "itertools-ts": "^1.29.0"
+  },
+  "types": "./lib/index.d.ts",
+  "jsnext:main": "./es/index.js",
+  "sideEffects": false
+}
