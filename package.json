@@ -26,8 +26,7 @@
     "jest": "jest",
     "format": "ts-scripts format",
     "lint": "ts-scripts lint",
-    "prepublishOnly": "npm run build",
-    "my": "tsx --no-warnings src/my"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "es",
