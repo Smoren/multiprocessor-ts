@@ -10,7 +10,7 @@
 Description
 -----------
 
-Multiprocessing pool implementation for TypeScript.
+Multiprocessing pool implementation for NodeJS and TypeScript.
 
 Real multiprocessing is implemented using [child_process](https://nodejs.org/api/child_process.html) module.
 
