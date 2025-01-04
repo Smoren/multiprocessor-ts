@@ -35,4 +35,4 @@ npm run test
 License
 -------
 
-Multiprocessing TS is licensed under the MIT License.
+Multiprocessor TS is licensed under the MIT License.
