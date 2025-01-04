@@ -1,7 +1,7 @@
 {
   "name": "multiprocessor",
   "version": "0.3.0",
-  "description": "Multiprocessing genetic algorithm implementation library extension",
+  "description": "Multiprocessing pool implementation for NodeJS and TypeScript",
   "license": "MIT",
   "repository": {
     "type": "git",
