@@ -48,7 +48,9 @@
     "workers",
     "thread",
     "threads",
-    "TypeScript"
+    "TypeScript",
+    "python",
+    "python like"
   ],
   "devDependencies": {
     "@borderless/ts-scripts": "^0.15.0",
