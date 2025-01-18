@@ -74,6 +74,8 @@ function calcSinTask(x: number): number {
 API Reference
 -------------
 
+For detailed documentation and usage examples, please refer to the [API documentation](https://smoren.github.io/multiprocessor-ts/).
+
 ## Types
 ```typescript
 export type Task<TInput, TResult> = (input: TInput) => (Promise<TResult> | TResult);
