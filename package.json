@@ -1,6 +1,6 @@
 {
   "name": "multiprocessor",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Multiprocessing pool implementation for NodeJS and TypeScript",
   "license": "MIT",
   "repository": {

@@ -32,14 +32,14 @@ const poolSize = 4;
 const pool = new Pool(poolSize);
 const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const onTaskSuccess = (taskResult: number, taskInput: number, taskIndex: number) => {
-  console.log('taskSuccess', taskResult, taskInput, taskIndex);
-};
-const onTaskError = (taskError: string, taskInput: number, taskIndex: number) => {
-  console.log('taskError', taskError, taskInput, taskIndex);
-};
-
-const result = await pool.map(input, calcSinTask, onTaskSuccess, onTaskError);
+const result = await pool.map(input, calcSinTask, {
+  onTaskResult: (result: number, input: number, index: number) => {
+    console.log(`Task #${index} | result: ${result}, input: ${input}`);
+  },
+  onTaskError: (error: string, input: number, index: number) => {
+    console.log(`Task #${index} | error: ${error}, input: ${input}`);
+  }
+});
 pool.close();
 
 console.log(result);
@@ -84,7 +84,14 @@ const poolSize = 4;
 const pool = new Pool(poolSize);
 const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const result = await pool.map(input, calcSinTask);
+const result = await pool.map(input, calcSinTask, {
+  onTaskResult: (result: number, input: number, index: number) => {
+    console.log(`Task #${index} | result: ${result}, input: ${input}`);
+  },
+  onTaskError: (error: string, input: number, index: number) => {
+    console.log(`Task #${index} | error: ${error}, input: ${input}`);
+  }
+});
 pool.close();
 
 console.log(result);
