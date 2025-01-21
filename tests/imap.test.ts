@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { infinite, single } from "itertools-ts";
 import { Pool } from "../src";
+import { TaskHandlers } from "../src/types";
 
 describe('Pool IMap Tests', () => {
   it('Array Input Calc Sinus Test', async () => {
@@ -75,17 +76,19 @@ describe('Pool IMap Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onTaskSuccess = (result: number, input: number, index: number) => {
-      console.log('taskSuccess', result, input, index);
-      resultsCount++;
-    };
-    const onTaskError = (error: string, input: number, index: number) => {
-      console.log('taskError', error, input, index);
-      errorsCount++;
+    const taskHandlers: TaskHandlers<number, number> = {
+      onTaskSuccess: (result: number, input: number, index: number) => {
+        console.log('taskSuccess', result, input, index);
+        resultsCount++;
+      },
+      onTaskError: (error: string, input: number, index: number) => {
+        console.log('taskError', error, input, index);
+        errorsCount++;
+      },
     };
 
     const result = [];
-    for await (const taskSuccess of pool.imap(input, calcSinWithRandomErrorTask, onTaskSuccess, onTaskError)) {
+    for await (const taskSuccess of pool.imap(input, calcSinWithRandomErrorTask, taskHandlers)) {
       result.push(taskSuccess);
     }
 
@@ -128,17 +131,19 @@ describe('Pool IMap Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onTaskSuccess = (result: number, input: number[], index: number) => {
-      console.log('taskSuccess', result, input, index);
-      resultsCount++;
-    };
-    const onTaskError = (error: string, input: number[], index: number) => {
-      console.log('taskError', error, input, index);
-      errorsCount++;
-    };
+    const taskHandlers: TaskHandlers<number[], number> = {
+      onTaskSuccess: (result: number, input: number[], index: number) => {
+        console.log('taskSuccess', result, input, index);
+        resultsCount++;
+      },
+      onTaskError: (error: string, input: number[], index: number) => {
+        console.log('taskError', error, input, index);
+        errorsCount++;
+      },
+    }
 
     const result = [];
-    for await (const taskSuccess of pool.imap(input, task, onTaskSuccess, onTaskError)) {
+    for await (const taskSuccess of pool.imap(input, task, taskHandlers)) {
       result.push(taskSuccess);
     }
 

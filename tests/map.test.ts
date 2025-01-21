@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { infinite, single } from "itertools-ts";
 import { Pool } from "../src";
+import { TaskHandlers } from "../src/types";
 
 describe('Pool Map Tests', () => {
   it('Array Input Calc Sinus Test', async () => {
@@ -65,16 +66,18 @@ describe('Pool Map Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onTaskSuccess = (result: number, input: number, index: number) => {
-      console.log('taskSuccess', result, input, index);
-      resultsCount++;
-    };
-    const onTaskError = (error: string, input: number, index: number) => {
-      console.log('taskError', error, input, index);
-      errorsCount++;
+    const taskHandlers: TaskHandlers<number, number> = {
+      onTaskSuccess: (result: number, input: number, index: number) => {
+        console.log('taskSuccess', result, input, index);
+        resultsCount++;
+      },
+      onTaskError: (error: string, input: number, index: number) => {
+        console.log('taskError', error, input, index);
+        errorsCount++;
+      },
     };
 
-    const result = await pool.map(input, calcSinWithRandomErrorTask, onTaskSuccess, onTaskError);
+    const result = await pool.map(input, calcSinWithRandomErrorTask, taskHandlers);
 
     pool.close();
 
@@ -115,16 +118,18 @@ describe('Pool Map Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onTaskSuccess = (result: number, input: number[], index: number) => {
-      console.log('taskSuccess', result, input, index);
-      resultsCount++;
-    };
-    const onTaskError = (error: string, input: number[], index: number) => {
-      console.log('taskError', error, input, index);
-      errorsCount++;
+    const taskHandlers: TaskHandlers<number[], number> = {
+      onTaskSuccess: (result: number, input: number[], index: number) => {
+        console.log('taskSuccess', result, input, index);
+        resultsCount++;
+      },
+      onTaskError: (error: string, input: number[], index: number) => {
+        console.log('taskError', error, input, index);
+        errorsCount++;
+      },
     };
 
-    return pool.map(data, task, onTaskSuccess, onTaskError).then((result) => {
+    return pool.map(data, task, taskHandlers).then((result) => {
       pool.close();
 
       expect(result.length).toBe(inputsCount);

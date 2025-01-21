@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { infinite, single } from "itertools-ts";
 import { Pool } from "../src";
+import { TaskHandlers } from "../src/types";
 
 describe('Pool IMap Unordered Tests', () => {
   it('Array Input Calc Sinus Test', async () => {
@@ -88,18 +89,20 @@ describe('Pool IMap Unordered Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onTaskSuccess = (result: [number, number], input: [number, number], index: number) => {
-      console.log('taskSuccess', result, input, index);
-      resultsCount++;
-    };
-    const onTaskError = (error: string, input: [number, number], index: number) => {
-      console.log('taskError', error, input, index);
-      errorsCount++;
+    const taskHandlers: TaskHandlers<[number, number], [number, number]> = {
+      onTaskSuccess: (result: [number, number], input: [number, number], index: number) => {
+        console.log('taskSuccess', result, input, index);
+        resultsCount++;
+      },
+      onTaskError: (error: string, input: [number, number], index: number) => {
+        console.log('taskError', error, input, index);
+        errorsCount++;
+      },
     };
 
     const result: Array<number | undefined> = [...single.repeat(undefined, inputCount)];
 
-    for await (const item of pool.imapUnordered(indexedInput, calcSinIndexedWithRandomErrorTask, onTaskSuccess, onTaskError)) {
+    for await (const item of pool.imapUnordered(indexedInput, calcSinIndexedWithRandomErrorTask, taskHandlers)) {
       if (item === undefined) {
         continue;
       }
@@ -146,17 +149,19 @@ describe('Pool IMap Unordered Tests', () => {
     let resultsCount = 0;
     let errorsCount = 0;
 
-    const onTaskSuccess = (result: number, input: number[], index: number) => {
-      console.log('taskSuccess', result, input, index);
-      resultsCount++;
-    };
-    const onTaskError = (error: string, input: number[], index: number) => {
-      console.log('taskError', error, input, index);
-      errorsCount++;
+    const taskHandlers: TaskHandlers<number[], number> = {
+      onTaskSuccess: (result: number, input: number[], index: number) => {
+        console.log('taskSuccess', result, input, index);
+        resultsCount++;
+      },
+      onTaskError: (error: string, input: number[], index: number) => {
+        console.log('taskError', error, input, index);
+        errorsCount++;
+      },
     };
 
     const result = [];
-    for await (const item of pool.imapUnordered(data, task, onTaskSuccess, onTaskError)) {
+    for await (const item of pool.imapUnordered(data, task, taskHandlers)) {
       result.push(item);
     }
 
