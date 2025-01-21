@@ -33,7 +33,7 @@ const pool = new Pool(poolSize);
 const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const result = await pool.map(input, calcSinTask, {
-  onTaskResult: (result: number, input: number, index: number) => {
+  onTaskSuccess: (result: number, input: number, index: number) => {
     console.log(`Task #${index} | result: ${result}, input: ${input}`);
   },
   onTaskError: (error: string, input: number, index: number) => {
@@ -85,7 +85,7 @@ const pool = new Pool(poolSize);
 const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const result = await pool.map(input, calcSinTask, {
-  onTaskResult: (result: number, input: number, index: number) => {
+  onTaskSuccess: (result: number, input: number, index: number) => {
     console.log(`Task #${index} | result: ${result}, input: ${input}`);
   },
   onTaskError: (error: string, input: number, index: number) => {
